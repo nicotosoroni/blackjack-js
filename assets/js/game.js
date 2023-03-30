@@ -9,6 +9,15 @@ let deck = [];
 const types = ['C', 'D', 'H', 'S'];
 const special = ['A', 'J', 'Q', 'K'];
 
+let playerPoints = 0;
+let computerPoints = 0;
+
+//Referencias al HTML
+
+const btnGet = document.querySelector('#btnGet');
+const displayPP = document.querySelectorAll('small');
+const playerCards = document.querySelector('#playerCards');
+
 function fyShuffle(a) {
   let i = a.length;
   while (--i > 0) {
@@ -29,9 +38,7 @@ const createDesk = () => {
       deck.push(es + type);
     }
   }
-  console.log(deck);
   deck = fyShuffle(deck);
-  console.log(deck);
   return deck;
 };
 
@@ -62,3 +69,20 @@ const cardValue = (card) => {
 };
 
 cardValue('2D');
+
+// Enventos
+
+btnGet.addEventListener('click', () => {
+  const card = requestCard();
+  playerPoints += cardValue(card);
+  displayPP[0].innerText = playerPoints;
+
+  const newCard = document.createElement('img');
+  newCard.classList.add('carta');
+  newCard.src = `assets/cartas/${card}.png`;
+  playerCards.append(newCard);
+
+  if (playerPoints > 21) {
+    btnGet.disabled = true;
+  }
+});
