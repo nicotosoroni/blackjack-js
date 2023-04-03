@@ -10,13 +10,16 @@ const types = ['C', 'D', 'H', 'S'];
 const special = ['A', 'J', 'Q', 'K'];
 
 let playerPoints = 0;
-let computerPoints = 0;
+let compPoints = 0;
 
 //Referencias al HTML
 
 const btnGet = document.querySelector('#btnGet');
-const displayPP = document.querySelectorAll('small');
+const btnStop = document.querySelector('#btnStop');
+const btnNew = document.querySelector('#btnNew');
+const displayP = document.querySelectorAll('small');
 const playerCards = document.querySelector('#playerCards');
+const compCards = document.querySelector('#compCards');
 
 function fyShuffle(a) {
   let i = a.length;
@@ -28,6 +31,7 @@ function fyShuffle(a) {
 }
 
 const createDesk = () => {
+  deck = [];
   for (let i = 2; i <= 10; i++) {
     for (let type of types) {
       deck.push(i + type);
@@ -68,14 +72,47 @@ const cardValue = (card) => {
     : (points = parseInt(value));
 };
 
-cardValue('2D');
+// computer turn
+
+const compTurn = (pointsToBeat) => {
+  do {
+    const card = requestCard();
+    compPoints += cardValue(card);
+    displayP[1].innerText = compPoints;
+
+    const newCard = document.createElement('img');
+    newCard.classList.add('carta');
+    newCard.src = `assets/cartas/${card}.png`;
+    compCards.append(newCard);
+    if (playerPoints > 21) break;
+  } while (pointsToBeat >= compPoints && pointsToBeat <= 21);
+  if ((playerPoints > compPoints && playerPoints <= 21) || compPoints > 21) {
+    showResult('Player');
+  } else if (
+    (playerPoints < compPoints && compPoints <= 21) ||
+    playerPoints > 21
+  ) {
+    showResult('Computer');
+  } else {
+    showResult('Nobody');
+  }
+};
+
+const showResult = (winner) => {
+  const result = document.createElement('div');
+  result.classList.add('result');
+  result.innerHTML += `
+  <p>${winner} won!</p>
+  `;
+  document.body.append(result);
+};
 
 // Enventos
 
 btnGet.addEventListener('click', () => {
   const card = requestCard();
   playerPoints += cardValue(card);
-  displayPP[0].innerText = playerPoints;
+  displayP[0].innerText = playerPoints;
 
   const newCard = document.createElement('img');
   newCard.classList.add('carta');
@@ -84,5 +121,28 @@ btnGet.addEventListener('click', () => {
 
   if (playerPoints > 21) {
     btnGet.disabled = true;
+    btnStop.disabled = true;
+    compTurn(playerPoints);
   }
+});
+
+btnStop.addEventListener('click', () => {
+  btnGet.disabled = true;
+  btnStop.disabled = true;
+  compTurn(playerPoints);
+});
+
+btnNew.addEventListener('click', () => {
+  createDesk();
+  console.log(deck);
+  playerPoints = 0;
+  compPoints = 0;
+  displayP[0].innerText = 0;
+  displayP[1].innerText = 0;
+  playerCards.innerHTML = '';
+  compCards.innerHTML = '';
+  compCards.innerHTML = '';
+  btnGet.disabled = false;
+  btnStop.disabled = false;
+  document.body.removeChild(document.querySelector('.result'));
 });

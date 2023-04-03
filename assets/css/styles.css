@@ -20,7 +20,7 @@ body {
   margin-left: -75px;
 }
 
-#computadora-cartas,
-#jugador-cartas {
+#compCards,
+#playerCards {
   height: 240px;
 }
